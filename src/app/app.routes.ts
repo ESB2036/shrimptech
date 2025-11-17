@@ -22,8 +22,7 @@ export const routes: Routes = [
   },
   {
     path: 'sales',
-    loadChildren: () => 
-      import('./modules/sales/sales-module').then((m) => m.SalesModule),
+    loadChildren: () => import('./modules/sales/sales-module').then((m) => m.SalesModule),
     canActivate: [authGuard],
   },
   { path: '**', redirectTo: '' },
