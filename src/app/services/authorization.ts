@@ -11,7 +11,7 @@ export class Authorization {
     { username: 'heidy', password: '1234', name: 'Heidy Mendoza', role: 'Operario de Producción' },
     { username: 'edu', password: '1234', name: 'Edú Sabando', role: 'Técnico de Monitoreo' },
     { username: 'miguel', password: '1234', name: 'Miguel Salazar', role: 'Vendedor' },
-    { username: 'emily', password: '1234', name: 'Emily Obando', role: 'Bodeguero' },
+    { username: 'emely', password: '1234', name: 'Emely Obando', role: 'Bodeguero' },
   ];
 
   readonly loggedIn$ = new BehaviorSubject<boolean>(false);
