@@ -26,4 +26,11 @@ export const routes: Routes = [
     canActivate: [authGuard],
   },
   { path: '**', redirectTo: '' },
+  {
+    path: 'inventory',
+    loadChildren: () =>
+      import('./modules/inventory/inventory-module').then((m) => m.InventoryModule),
+    canActivate: [authGuard],
+  },
+  { path: '**', redirectTo: '' },
 ];
