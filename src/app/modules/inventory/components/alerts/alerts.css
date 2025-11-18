@@ -1,0 +1,39 @@
+h2 {
+  color: #000000; 
+}
+
+.table thead th {
+  text-align: center;
+}
+
+.table tbody td {
+  text-align: center;
+  vertical-align: middle;
+}
+
+.badge {
+  font-size: 0.9rem;
+  padding: 0.5em 0.8em;
+}
+
+.badge-estado {
+  width: 125px !important;
+  display: inline-block !important;
+  text-align: center !important;
+  padding: 8px 0 !important;
+  font-size: 0.85rem !important;
+}
+
+.table thead th {
+  background-color: #0097a7 !important; 
+  color: white !important;               
+  font-weight: normal;
+}
+
+.table th {
+  border-color: #cecece !important;
+}
+
+
+
+

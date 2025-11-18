@@ -1,0 +1,163 @@
+<div class="container mt-4">
+  <h2 class="text-center mb-4 fw-bold">Gestión de Productos</h2>
+
+  <div class="d-flex justify-content-end mb-3">
+    <button class="btn btn-custom" data-bs-toggle="modal" data-bs-target="#productoModal">
+      Agregar Producto
+    </button>
+  </div>
+
+  <!-- Filtros -->
+  <div class="row mb-3 g-3">
+    <div class="col-md-4">
+      <label class="form-label"><strong>Lote:</strong></label>
+      <input type="text" class="form-control" placeholder="Buscar lote...">
+    </div>
+
+    <div class="col-md-4">
+      <label class="form-label"><strong>Tipo de Camarón:</strong></label>
+      <select class="form-select">
+        <option value="">Todos</option>
+        <option value="Vannamei">Camarón Vannamei</option>
+        <option value="TigreNegro">Camarón Tigre Negro</option>
+        <option value="Rosado">Camarón Rosado</option>
+        <option value="BlancoPacifico">Camarón Blanco del Pacífico</option>
+      </select>
+    </div>
+
+    <div class="col-md-4">
+      <label class="form-label"><strong>Estanque:</strong></label>
+      <select class="form-select">
+        <option value="">Todos</option>
+        <option>Estanque 1</option>
+        <option>Estanque 2</option>
+        <option>Estanque 3</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table table-striped table-bordered align-middle">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Lote</th>
+          <th>Tipo Camarón</th>
+          <th>Estanque</th>
+          <th>Stock</th>
+          <th>Peso Promedio (g)</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td>Lote 001</td>
+          <td>Camarón Vannamei</td>
+          <td>Estanque 1</td>
+          <td>100</td>
+          <td>15</td>
+          <td>
+            <i class="bi bi-eye action-icon me-2"></i>
+            <i class="bi bi-pencil action-icon me-2"></i>
+            <i class="bi bi-trash action-icon"></i>
+          </td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Lote 002</td>
+          <td>Camarón Tigre Negro</td>
+          <td>Estanque 2</td>
+          <td>150</td>
+          <td>18</td>
+          <td>
+            <i class="bi bi-eye action-icon me-2"></i>
+            <i class="bi bi-pencil action-icon me-2"></i>
+            <i class="bi bi-trash action-icon"></i>
+          </td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Lote 003</td>
+          <td>Camarón Rosado</td>
+          <td>Estanque 3</td>
+          <td>200</td>
+          <td>12</td>
+          <td>
+            <i class="bi bi-eye action-icon me-2"></i>
+            <i class="bi bi-pencil action-icon me-2"></i>
+            <i class="bi bi-trash action-icon"></i>
+          </td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>Lote 004</td>
+          <td>Camarón Blanco del Pacífico</td>
+          <td>Estanque 1</td>
+          <td>180</td>
+          <td>20</td>
+          <td>
+            <i class="bi bi-eye action-icon me-2"></i>
+            <i class="bi bi-pencil action-icon me-2"></i>
+            <i class="bi bi-trash action-icon"></i>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Modal Agregar Producto -->
+<div class="modal fade" id="productoModal" tabindex="-1" aria-labelledby="productoModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title modal-title-custom" id="productoModalLabel">Agregar Producto</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+        <form>
+          <div class="mb-3">
+            <label class="form-label"><strong>Lote:</strong></label>
+            <input type="text" class="form-control">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label"><strong>Tipo de Camarón:</strong></label>
+            <select class="form-select">
+              <option value="Vannamei">Camarón Vannamei</option>
+              <option value="TigreNegro">Camarón Tigre Negro</option>
+              <option value="Rosado">Camarón Rosado</option>
+              <option value="BlancoPacifico">Camarón Blanco del Pacífico</option>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label"><strong>Estanque:</strong></label>
+            <select class="form-select">
+              <option>Estanque 1</option>
+              <option>Estanque 2</option>
+              <option>Estanque 3</option>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label"><strong>Stock:</strong></label>
+            <input type="number" class="form-control">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label"><strong>Peso Promedio (g):</strong></label>
+            <input type="number" class="form-control">
+          </div>
+
+          <div class="d-flex justify-content-end">
+            <button type="submit" class="btn btn-custom w-30">Guardar Producto</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

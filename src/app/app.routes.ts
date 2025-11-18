@@ -14,12 +14,12 @@ export const routes: Routes = [
     component: PrincipalDashboard,
     canActivate: [authGuard],
   },
-  /*{
+  {
     path: 'inventory',
     loadChildren: () =>
       import('./modules/inventory/inventory-module').then((m) => m.InventoryModule),
     canActivate: [authGuard],
-  },*/
+  },
   {
     path: 'monitoring',
     loadChildren: () =>
