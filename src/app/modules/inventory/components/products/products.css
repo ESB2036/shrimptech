@@ -3,8 +3,10 @@ html {
   font-family: 'Helvetica Neue', sans-serif !important;
   margin: 0;
   padding: 0;
-  height: 100vh;
+  min-height: 100%;
+  height: auto;
 }
+
 
 .app-container {
   display: flex;

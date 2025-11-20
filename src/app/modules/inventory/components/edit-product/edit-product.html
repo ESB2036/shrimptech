@@ -1,0 +1,59 @@
+<div class="modal-content edit-product-modal">
+
+  <div class="modal-header">
+    <h5 class="modal-title">Editar Producto</h5>
+    <button type="button" class="btn-close" (click)="cerrar()"></button>
+  </div>
+
+  <div class="modal-body">
+
+    <div class="mb-3">
+      <label class="form-label">Lote:</label>
+      <input type="text" class="form-control"
+             [(ngModel)]="data.lote"
+             name="lote">
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Tipo de Camarón:</label>
+      <select class="form-select"
+              [(ngModel)]="data.tipo"
+              name="tipo">
+        <option value="Camarón Vannamei">Camarón Vannamei</option>
+        <option value="Camarón Tigre">Camarón Tigre</option>
+      </select>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Estanque:</label>
+      <select class="form-select"
+              [(ngModel)]="data.estanque"
+              name="estanque">
+        <option value="Estanque 1">Estanque 1</option>
+        <option value="Estanque 2">Estanque 2</option>
+        <option value="Estanque 3">Estanque 3</option>
+      </select>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Stock:</label>
+      <input type="number" class="form-control"
+             [(ngModel)]="data.stock"
+             name="stock">
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Peso Promedio (g):</label>
+      <input type="number" class="form-control"
+             [(ngModel)]="data.peso"
+             name="peso">
+    </div>
+
+  </div>
+
+  <div class="modal-footer">
+    <button class="btn btn-cancel" (click)="cerrar()">Cerrar</button>
+    <button class="btn btn-save" (click)="guardar()">Guardar</button>
+  </div>
+
+</div>

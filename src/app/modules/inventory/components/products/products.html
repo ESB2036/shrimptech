@@ -1,41 +1,44 @@
 <div class="container mt-4">
   <h2 class="text-center mb-4 fw-bold">Gestión de Productos</h2>
 
+  <!-- BOTÓN AGREGAR -->
   <div class="d-flex justify-content-end mb-3">
-    <button class="btn btn-custom" data-bs-toggle="modal" data-bs-target="#productoModal">
+    <button class="btn btn-custom" data-bs-toggle="modal" data-bs-target="#agregarModal">
       Agregar Producto
     </button>
   </div>
 
-  <!-- Filtros -->
+  <!-- FILTROS -->
   <div class="row mb-3 g-3">
+    <!-- FILTRO LOTE -->
     <div class="col-md-4">
       <label class="form-label"><strong>Lote:</strong></label>
-      <input type="text" class="form-control" placeholder="Buscar lote...">
-    </div>
-
-    <div class="col-md-4">
-      <label class="form-label"><strong>Tipo de Camarón:</strong></label>
-      <select class="form-select">
+      <select class="form-select" [(ngModel)]="filtroLote" (change)="filtrar()">
         <option value="">Todos</option>
-        <option value="Vannamei">Camarón Vannamei</option>
-        <option value="TigreNegro">Camarón Tigre Negro</option>
-        <option value="Rosado">Camarón Rosado</option>
-        <option value="BlancoPacifico">Camarón Blanco del Pacífico</option>
+        <option *ngFor="let lote of lotes">{{ lote }}</option>
       </select>
     </div>
 
+    <!-- FILTRO TIPO -->
+    <div class="col-md-4">
+      <label class="form-label"><strong>Tipo de Camarón:</strong></label>
+      <select class="form-select" [(ngModel)]="filtroTipo" (change)="filtrar()">
+        <option value="">Todos</option>
+        <option *ngFor="let t of tipos">{{ t }}</option>
+      </select>
+    </div>
+
+    <!-- FILTRO ESTANQUE -->
     <div class="col-md-4">
       <label class="form-label"><strong>Estanque:</strong></label>
-      <select class="form-select">
+      <select class="form-select" [(ngModel)]="filtroEstanque" (change)="filtrar()">
         <option value="">Todos</option>
-        <option>Estanque 1</option>
-        <option>Estanque 2</option>
-        <option>Estanque 3</option>
+        <option *ngFor="let e of estanques">{{ e }}</option>
       </select>
     </div>
   </div>
 
+  <!-- TABLA -->
   <div class="table-responsive">
     <table class="table table-striped table-bordered align-middle">
       <thead>
@@ -49,57 +52,31 @@
           <th>Acciones</th>
         </tr>
       </thead>
+
       <tbody>
-        <tr>
-          <td>1</td>
-          <td>Lote 001</td>
-          <td>Camarón Vannamei</td>
-          <td>Estanque 1</td>
-          <td>100</td>
-          <td>15</td>
+        <tr *ngFor="let p of productosFiltrados">
+          <td>{{ p.id }}</td>
+          <td>{{ p.lote }}</td>
+          <td>{{ p.tipo }}</td>
+          <td>{{ p.estanque }}</td>
+          <td>{{ p.stock }}</td>
+          <td>{{ p.peso }}</td>
           <td>
-            <i class="bi bi-eye action-icon me-2"></i>
-            <i class="bi bi-pencil action-icon me-2"></i>
-            <i class="bi bi-trash action-icon"></i>
-          </td>
-        </tr>
-        <tr>
-          <td>2</td>
-          <td>Lote 002</td>
-          <td>Camarón Tigre Negro</td>
-          <td>Estanque 2</td>
-          <td>150</td>
-          <td>18</td>
-          <td>
-            <i class="bi bi-eye action-icon me-2"></i>
-            <i class="bi bi-pencil action-icon me-2"></i>
-            <i class="bi bi-trash action-icon"></i>
-          </td>
-        </tr>
-        <tr>
-          <td>3</td>
-          <td>Lote 003</td>
-          <td>Camarón Rosado</td>
-          <td>Estanque 3</td>
-          <td>200</td>
-          <td>12</td>
-          <td>
-            <i class="bi bi-eye action-icon me-2"></i>
-            <i class="bi bi-pencil action-icon me-2"></i>
-            <i class="bi bi-trash action-icon"></i>
-          </td>
-        </tr>
-        <tr>
-          <td>4</td>
-          <td>Lote 004</td>
-          <td>Camarón Blanco del Pacífico</td>
-          <td>Estanque 1</td>
-          <td>180</td>
-          <td>20</td>
-          <td>
-            <i class="bi bi-eye action-icon me-2"></i>
-            <i class="bi bi-pencil action-icon me-2"></i>
-            <i class="bi bi-trash action-icon"></i>
+            <i class="bi bi-eye action-icon me-2"
+               data-bs-toggle="modal"
+               data-bs-target="#verModal"
+               (click)="verProducto(p)">
+            </i>
+
+            <i class="bi bi-pencil action-icon me-2"
+               data-bs-toggle="modal"
+               data-bs-target="#editarModal"
+               (click)="editarProducto(p)">
+            </i>
+
+            <i class="bi bi-trash action-icon"
+               (click)="eliminarProducto(p.id)">
+            </i>
           </td>
         </tr>
       </tbody>
@@ -107,56 +84,75 @@
   </div>
 </div>
 
-<!-- Modal Agregar Producto -->
-<div class="modal fade" id="productoModal" tabindex="-1" aria-labelledby="productoModalLabel" aria-hidden="true">
+<!-- MODAL AGREGAR -->
+<div class="modal fade" id="agregarModal" tabindex="-1">
   <div class="modal-dialog">
     <div class="modal-content">
 
       <div class="modal-header">
-        <h5 class="modal-title modal-title-custom" id="productoModalLabel">Agregar Producto</h5>
+        <h5 class="modal-title modal-title-custom">Agregar Producto</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
 
       <div class="modal-body">
-        <form>
+
+        <form #formAgregar="ngForm" (ngSubmit)="agregarProducto(formAgregar)">
+          
           <div class="mb-3">
             <label class="form-label"><strong>Lote:</strong></label>
-            <input type="text" class="form-control">
+            <input type="text" class="form-control" name="lote" ngModel required>
           </div>
 
           <div class="mb-3">
             <label class="form-label"><strong>Tipo de Camarón:</strong></label>
-            <select class="form-select">
-              <option value="Vannamei">Camarón Vannamei</option>
-              <option value="TigreNegro">Camarón Tigre Negro</option>
-              <option value="Rosado">Camarón Rosado</option>
-              <option value="BlancoPacifico">Camarón Blanco del Pacífico</option>
+            <select class="form-select" name="tipo" ngModel>
+              <option *ngFor="let t of tipos">{{ t }}</option>
             </select>
           </div>
 
           <div class="mb-3">
             <label class="form-label"><strong>Estanque:</strong></label>
-            <select class="form-select">
-              <option>Estanque 1</option>
-              <option>Estanque 2</option>
-              <option>Estanque 3</option>
+            <select class="form-select" name="estanque" ngModel>
+              <option *ngFor="let e of estanques">{{ e }}</option>
             </select>
           </div>
 
           <div class="mb-3">
             <label class="form-label"><strong>Stock:</strong></label>
-            <input type="number" class="form-control">
+            <input type="number" class="form-control" name="stock" ngModel required>
           </div>
 
           <div class="mb-3">
             <label class="form-label"><strong>Peso Promedio (g):</strong></label>
-            <input type="number" class="form-control">
+            <input type="number" class="form-control" name="peso" ngModel required>
           </div>
 
           <div class="d-flex justify-content-end">
-            <button type="submit" class="btn btn-custom w-30">Guardar Producto</button>
+            <button class="btn btn-custom">Guardar Producto</button>
           </div>
         </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL VER PRODUCTO -->
+<div class="modal fade" id="verModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title modal-title-custom">Información del Producto</h5>
+        <button class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+        <p><strong>ID:</strong> {{ productoSeleccionado?.id }}</p>
+        <p><strong>Lote:</strong> {{ productoSeleccionado?.lote }}</p>
+        <p><strong>Tipo:</strong> {{ productoSeleccionado?.tipo }}</p>
+        <p><strong>Estanque:</strong> {{ productoSeleccionado?.estanque }}</p>
+        <p><strong>Stock:</strong> {{ productoSeleccionado?.stock }}</p>
+        <p><strong>Peso Promedio:</strong> {{ productoSeleccionado?.peso }} g</p>
       </div>
     </div>
   </div>
