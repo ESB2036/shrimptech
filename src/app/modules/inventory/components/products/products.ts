@@ -47,6 +47,21 @@ export class Products {
   filtroTipo = "";
   filtroEstanque = "";
 
+  //DATOS FILTROS
+  tiposOriginales = [
+  "Camarón Vannamei",
+  "Camarón Tigre Negro",
+  "Camarón Rosado",
+  "Camarón Blanco del Pacífico"
+];
+
+estanquesOriginales = [
+  "Estanque 1",
+  "Estanque 2",
+  "Estanque 3",
+  "Estanque 4"
+];
+
   //LISTAS DINÁMICAS
   lotes = [...new Set(this.productos.map(p => p.lote))];
   tipos = [...new Set(this.productos.map(p => p.tipo))];
@@ -79,20 +94,20 @@ export class Products {
 
   //AGREGAR
   openAgregarDialog() {
-    const dialogRef = this.dialog.open(AddProduct, {
-      data: {
-        nuevo: true,          
-        tipos: this.tipos,
-        estanques: this.estanques
-      }
-    });
+  const dialogRef = this.dialog.open(AddProduct, {
+    data: {
+      nuevo: true,
+      tipos: this.tiposOriginales,
+      estanques: this.estanquesOriginales
+    }
+  });
 
   dialogRef.afterClosed().subscribe((result: any) => {
     if (result) {
-      result.id = this.productos.length + 1; 
-      this.productos.push(result);          
-      this.actualizarListas();              
-      this.filtrar();                        
+      result.id = this.productos.length + 1;   
+      this.productos.push(result);              
+      this.actualizarListas();                 
+      this.filtrar();                         
     }
   });
 }
@@ -140,3 +155,4 @@ export class Products {
     this.estanques = [...new Set(this.productos.map(p => p.estanque))];
   }
 }
+
