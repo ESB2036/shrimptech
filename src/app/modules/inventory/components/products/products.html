@@ -11,7 +11,7 @@
   <!-- FILTROS -->
   <div class="filtros">
   <div class="filtro-item">
-    <mat-form-field appearance="outline" class="filtro-material">
+    <mat-form-field appearance="outline">
       <mat-label>Lote:</mat-label>
       <mat-select [(ngModel)]="filtroLote" (selectionChange)="filtrar()">
         <mat-option value="">Todos</mat-option>
@@ -21,7 +21,7 @@
   </div>
 
   <div class="filtro-item">
-    <mat-form-field appearance="outline" class="filtro-material">
+    <mat-form-field appearance="outline">
       <mat-label>Tipo de Camarón:</mat-label>
       <mat-select [(ngModel)]="filtroTipo" (selectionChange)="filtrar()">
         <mat-option value="">Todos</mat-option>
@@ -31,7 +31,7 @@
   </div>
 
   <div class="filtro-item">
-    <mat-form-field appearance="outline" class="filtro-material">
+    <mat-form-field appearance="outline">
       <mat-label>Estanque:</mat-label>
       <mat-select [(ngModel)]="filtroEstanque" (selectionChange)="filtrar()">
         <mat-option value="">Todos</mat-option>
