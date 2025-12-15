@@ -48,3 +48,30 @@
   line-height: 1.4;
   margin: 0;
 }
+
+@media (max-width: 768px) {
+  .inventory-modules {
+    grid-template-columns: 1fr;   
+    max-width: 100%;
+    padding: 20px 15px;
+  }
+
+  .inventory-card {
+    width: 100%;                  
+    max-width: 360px;             
+    margin: 0 auto;               
+    padding: 25px 20px;
+  }
+
+  .module-icon {
+    font-size: 2.5rem;
+  }
+
+  .inventory-card h3 {
+    font-size: 1.2rem;
+  }
+
+  .inventory-card p {
+    font-size: 0.85rem;
+  }
+}
