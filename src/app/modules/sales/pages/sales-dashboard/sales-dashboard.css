@@ -1,0 +1,376 @@
+.sales-dashboard {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  background: #fff;
+}
+
+.dashboard-header {
+  text-align: center;
+  margin-bottom: 40px;
+  background: linear-gradient(135deg, #0097a7, #00bcd4);
+  color: white;
+  padding: 40px 30px;
+  border-radius: 15px;
+  box-shadow: 0 8px 30px rgba(0, 151, 167, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.dashboard-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #ff9800, #4caf50, #2196f3);
+}
+
+.header-content {
+  position: relative;
+  z-index: 1;
+}
+
+.dashboard-header h1 {
+  margin: 0 0 10px 0;
+  font-size: 2.8rem;
+  font-weight: 700;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.subtitle {
+  margin: 0 0 25px 0;
+  opacity: 0.9;
+  font-size: 1.2rem;
+  font-weight: 300;
+}
+
+.refresh-btn {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  padding: 10px 20px;
+  border-radius: 30px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+}
+
+.refresh-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.refresh-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.header-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 25px;
+  max-width: 900px;
+  margin: 40px auto 0;
+}
+
+.stat-card {
+  background: rgba(255, 255, 255, 0.25);
+  padding: 25px;
+  border-radius: 15px;
+  text-align: center;
+  backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.4s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #ff9800, #4caf50);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.stat-card:hover::before {
+  opacity: 1;
+}
+
+.stat-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 10px;
+}
+
+.stat-value {
+  display: block;
+  font-size: 2.8rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.stat-trend {
+  font-size: 1.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.trend-up {
+  color: #4caf50;
+  background: rgba(76, 175, 80, 0.2) !important;
+}
+
+.trend-down {
+  color: #f44336;
+  background: rgba(244, 67, 54, 0.2) !important;
+}
+
+.trend-stable {
+  color: #ff9800;
+  background: rgba(255, 152, 0, 0.2) !important;
+}
+
+.stat-label {
+  font-size: 1.1rem;
+  opacity: 0.9;
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 500;
+}
+
+.stat-subtext {
+  font-size: 0.85rem;
+  opacity: 0.7;
+  display: block;
+}
+
+.recent-activities {
+  margin-top: 40px;
+  padding-top: 30px;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.recent-activities h3 {
+  margin: 0 0 20px 0;
+  font-size: 1.3rem;
+  opacity: 0.9;
+  text-align: left;
+}
+
+.activities-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.activity-item {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 15px 20px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  transition: all 0.3s ease;
+  border-left: 4px solid transparent;
+}
+
+.activity-item:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateX(5px);
+}
+
+.activity-item:nth-child(1) {
+  border-left-color: #ff9800;
+}
+
+.activity-item:nth-child(2) {
+  border-left-color: #4caf50;
+}
+
+.activity-item:nth-child(3) {
+  border-left-color: #2196f3;
+}
+
+.activity-icon {
+  font-size: 1.3rem;
+  flex-shrink: 0;
+}
+
+.activity-message {
+  flex: 1;
+  text-align: left;
+  font-size: 0.95rem;
+}
+
+.activity-time {
+  font-size: 0.85rem;
+  opacity: 0.8;
+  flex-shrink: 0;
+}
+
+.dashboard-loading {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.95);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(5px);
+}
+
+.loading-content {
+  text-align: center;
+}
+
+.loading-content .spinner {
+  width: 60px;
+  height: 60px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #0097a7;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 20px;
+}
+
+.loading-content p {
+  color: #333;
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+.dashboard-footer {
+  margin-top: 40px;
+  padding: 25px;
+  background: #f8f9fa;
+  border-radius: 15px;
+  border: 1px solid #e0e0e0;
+  text-align: center;
+}
+
+.footer-text {
+  margin: 0 0 20px 0;
+  color: #555;
+  font-size: 1rem;
+  line-height: 1.5;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.footer-text strong {
+  color: #0097a7;
+}
+
+.footer-stats {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.footer-stat {
+  font-size: 0.9rem;
+  color: #666;
+  background: white;
+  padding: 8px 15px;
+  border-radius: 20px;
+  border: 1px solid #e0e0e0;
+}
+
+@media (max-width: 992px) {
+  .dashboard-header h1 {
+    font-size: 2.2rem;
+  }
+  
+  .header-stats {
+    grid-template-columns: repeat(2, 1fr);
+    max-width: 600px;
+  }
+}
+
+@media (max-width: 768px) {
+  .sales-dashboard {
+    padding: 15px;
+  }
+  
+  .dashboard-header {
+    padding: 30px 20px;
+  }
+  
+  .dashboard-header h1 {
+    font-size: 1.8rem;
+  }
+  
+  .subtitle {
+    font-size: 1rem;
+  }
+  
+  .header-stats {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  
+  .stat-value {
+    font-size: 2.2rem;
+  }
+  
+  .activity-item {
+    flex-direction: column;
+    text-align: center;
+    gap: 10px;
+  }
+  
+  .activity-message {
+    text-align: center;
+  }
+  
+  .footer-stats {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .stat-card {
+    padding: 20px 15px;
+  }
+  
+  .stat-value {
+    font-size: 1.8rem;
+  }
+  
+  .stat-trend {
+    width: 40px;
+    height: 40px;
+    font-size: 1.4rem;
+  }
+}
