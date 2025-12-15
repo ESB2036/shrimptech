@@ -116,6 +116,10 @@ h1 {
   margin-top: 0px;
 }
 
+.table-responsive {
+  overflow-x: auto;
+}
+
 .mat-mdc-table {
   background: white;
   border-radius: 8px;
