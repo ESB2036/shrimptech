@@ -1,0 +1,235 @@
+<div class="customers-panel">
+  <!-- Título y botón de acción -->
+  <h2>👥 Gestión de Clientes</h2>
+  <button class="add-btn" (click)="openAddModal()">+ Nuevo Cliente</button>
+
+  <!-- Filtros -->
+  <div class="filters-section">
+    <div class="search-box">
+      <input
+        type="text"
+        placeholder="Buscar cliente..."
+        [(ngModel)]="searchTerm"
+        (input)="applyFilters()"
+        class="search-input"
+      />
+      <span class="search-icon">🔍</span>
+    </div>
+
+    <div class="filter-controls">
+      <select class="filter-select" [(ngModel)]="statusFilter" (change)="applyFilters()">
+        <option value="all">Todos los estados</option>
+        <option value="active">Activos</option>
+        <option value="inactive">Inactivos</option>
+      </select>
+
+      <select class="filter-select" [(ngModel)]="categoryFilter" (change)="applyFilters()">
+        <option value="all">Todas las categorías</option>
+        <option value="regular">Regular</option>
+        <option value="premium">Premium</option>
+        <option value="vip">VIP</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Cargando clientes...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error && !isLoading" class="error-state">
+    <p>{{ error }}</p>
+    <button class="retry-btn" (click)="loadCustomers()">Reintentar</button>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!isLoading && !error && filteredCustomers.length === 0" class="empty-state">
+    <p>No se encontraron clientes</p>
+  </div>
+
+  <!-- Grid de tarjetas de clientes -->
+  <div *ngIf="!isLoading && !error && filteredCustomers.length > 0" class="customers-grid">
+    <div
+      class="customer-card"
+      *ngFor="let customer of filteredCustomers; trackBy: trackByCustomerId"
+    >
+      <div class="customer-header">
+        <span class="customer-icon">{{ getCustomerTypeIcon(customer.type) }}</span>
+        <div class="customer-title">
+          <h3>{{ customer.name }}</h3>
+          <div class="customer-meta">
+            <span class="customer-ruc"
+              >{{ customer.type === 'empresa' ? 'RUC' : 'Cédula' }}: {{ customer.ruc }}</span
+            >
+            <span class="customer-category {{ customer.category }}">{{ customer.category }}</span>
+            <span class="customer-status {{ getStatusBadgeClass(customer.status) }}">
+              {{ customer.status === 'active' ? 'Activo' : 'Inactivo' }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="customer-info">
+        <p><span class="info-label">📞</span> {{ customer.phone }}</p>
+        <p><span class="info-label">✉️</span> {{ customer.email }}</p>
+        <p><span class="info-label">📍</span> {{ customer.location }}</p>
+        <p><span class="info-label">💰</span> Límite: ${{ customer.creditLimit | number }}</p>
+        <p><span class="info-label">📅</span> Términos: {{ customer.paymentTerms }}</p>
+        <p><span class="info-label">👤</span> Ejecutivo: {{ customer.salesRepresentative }}</p>
+        <p>
+          <span class="info-label">🛒</span> Total compras: ${{ customer.totalPurchases | number }}
+        </p>
+        <p *ngIf="customer.lastPurchase" class="last-purchase">
+          <span class="info-label">🕒</span> Última compra:
+          {{ customer.lastPurchase | date : 'dd/MM/yyyy' }}
+        </p>
+      </div>
+
+      <div class="customer-notes" *ngIf="customer.notes">
+        <p><strong>Notas:</strong> {{ customer.notes }}</p>
+      </div>
+
+      <div class="customer-actions">
+        <button class="btn-edit" (click)="openEditModal(customer)">Editar</button>
+        <button class="btn-delete" (click)="deleteCustomer(customer)">Eliminar</button>
+        <button class="btn-view">Ver Pedidos</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal para agregar/editar cliente -->
+  <div *ngIf="showModal" class="modal-overlay" (click)="closeModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>{{ editingCustomer ? 'Editar Cliente' : 'Nuevo Cliente' }}</h3>
+        <button class="close-btn" (click)="closeModal()">×</button>
+      </div>
+
+      <div class="modal-body">
+        <form (ngSubmit)="saveCustomer()" #customerFormRef="ngForm">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Nombre/Razón Social *</label>
+              <input
+                type="text"
+                [(ngModel)]="customerForm.name"
+                name="name"
+                required
+                class="form-input"
+              />
+            </div>
+
+            <div class="form-group">
+              <label>Tipo *</label>
+              <select [(ngModel)]="customerForm.type" name="type" required class="form-select">
+                <option value="empresa">Empresa</option>
+                <option value="negocio">Negocio</option>
+                <option value="persona">Persona</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>{{ customerForm.type === 'empresa' ? 'RUC' : 'Cédula' }} *</label>
+              <input
+                type="text"
+                [(ngModel)]="customerForm.ruc"
+                name="ruc"
+                required
+                class="form-input"
+              />
+            </div>
+
+            <div class="form-group">
+              <label>Categoría</label>
+              <select [(ngModel)]="customerForm.category" name="category" class="form-select">
+                <option value="regular">Regular</option>
+                <option value="premium">Premium</option>
+                <option value="vip">VIP</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Teléfono *</label>
+              <input
+                type="tel"
+                [(ngModel)]="customerForm.phone"
+                name="phone"
+                required
+                class="form-input"
+              />
+            </div>
+
+            <div class="form-group">
+              <label>Email *</label>
+              <input
+                type="email"
+                [(ngModel)]="customerForm.email"
+                name="email"
+                required
+                class="form-input"
+              />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Ubicación *</label>
+            <input
+              type="text"
+              [(ngModel)]="customerForm.location"
+              name="location"
+              required
+              class="form-input"
+            />
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Límite de Crédito ($)</label>
+              <input
+                type="number"
+                [(ngModel)]="customerForm.creditLimit"
+                name="creditLimit"
+                class="form-input"
+                min="0"
+              />
+            </div>
+
+            <div class="form-group">
+              <label>Términos de Pago</label>
+              <input
+                type="text"
+                [(ngModel)]="customerForm.paymentTerms"
+                name="paymentTerms"
+                class="form-input"
+                placeholder="Ej: 30 días"
+              />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Notas</label>
+            <textarea
+              [(ngModel)]="customerForm.notes"
+              name="notes"
+              class="form-textarea"
+              rows="3"
+            ></textarea>
+          </div>
+
+          <div class="modal-actions">
+            <button type="button" class="btn-cancel" (click)="closeModal()">Cancelar</button>
+            <button type="submit" class="btn-save" [disabled]="!customerFormRef.form.valid">
+              {{ editingCustomer ? 'Actualizar' : 'Guardar' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,347 @@
+<div class="orders-panel">
+  <!-- Título y botón de acción -->
+  <h2>📦 Pedidos de Venta</h2>
+  <button class="add-btn" (click)="openNewOrderModal()">+ Nuevo Pedido</button>
+
+  <!-- Filtros -->
+  <div class="filters-section">
+    <div class="search-box">
+      <input 
+        type="text" 
+        placeholder="Buscar pedido o cliente..." 
+        [(ngModel)]="searchTerm"
+        (input)="applyFilters()"
+        class="search-input"
+      >
+      <span class="search-icon">🔍</span>
+    </div>
+    
+    <div class="filter-controls">
+      <select 
+        class="filter-select" 
+        [(ngModel)]="statusFilter"
+        (change)="applyFilters()"
+      >
+        <option value="all">Todos los estados</option>
+        <option value="pending">Pendientes</option>
+        <option value="processing">En proceso</option>
+        <option value="delivered">Entregados</option>
+        <option value="cancelled">Cancelados</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Cargando pedidos...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error && !isLoading" class="error-state">
+    <p>{{ error }}</p>
+    <button class="retry-btn" (click)="loadData()">Reintentar</button>
+  </div>
+
+  <!-- Contenedor de pedidos -->
+  <div class="orders-container">
+    <div class="order-card" 
+         *ngFor="let order of filteredOrders; trackBy: trackByOrderId"
+         [class]="getStatusClass(order.status)">
+      
+      <!-- Encabezado del pedido -->
+      <div class="order-header">
+        <span class="order-icon">{{ getStatusIcon(order.status) }}</span>
+        <div class="order-title">
+          <h3>{{ order.id }} - {{ order.customerName }}</h3>
+          <div class="order-meta">
+            <span class="order-time">{{ formatTimeAgo(order.orderDate) }}</span>
+            <span class="order-status {{ getStatusClass(order.status) }}">
+              {{ getStatusText(order.status) }}
+            </span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Contenido del pedido -->
+      <div class="order-content">
+        <div class="order-products">
+          <p><strong>Productos:</strong></p>
+          <ul>
+            <li *ngFor="let item of order.items">
+              {{ item.quantity }} x {{ item.productName }} - ${{ item.unitPrice | number:'1.2-2' }} c/u
+            </li>
+          </ul>
+        </div>
+        
+        <div class="order-totals">
+          <p><strong>Subtotal:</strong> ${{ order.subtotal | number:'1.2-2' }}</p>
+          <p><strong>IVA (15%):</strong> ${{ order.tax | number:'1.2-2' }}</p>
+          <p class="order-total"><strong>Total:</strong> ${{ order.total | number:'1.2-2' }}</p>
+        </div>
+        
+        <!-- Información adicional -->
+        <div class="order-additional">
+          <p *ngIf="order.invoiceNumber">
+            <strong>Factura:</strong> {{ order.invoiceNumber }}
+          </p>
+          <p *ngIf="order.deliveryDate">
+            <strong>Fecha entrega:</strong> {{ order.deliveryDate | date:'dd/MM/yyyy' }}
+          </p>
+          <p *ngIf="order.notes">
+            <strong>Notas:</strong> {{ order.notes }}
+          </p>
+          <p *ngIf="order.suggestion" class="order-suggestion">
+            <strong>💡 Sugerencia:</strong> {{ order.suggestion }}
+          </p>
+        </div>
+      </div>
+      
+      <!-- Acciones según estado -->
+      <div class="order-actions">
+        <button *ngIf="order.status === 'pending'" 
+                class="btn-acknowledge" 
+                (click)="generateInvoice(order)">
+          Generar Factura
+        </button>
+        
+        <button *ngIf="order.status === 'delivered' && order.invoiceNumber" 
+                class="btn-details success"
+                (click)="downloadInvoice(order)">
+          Descargar Factura
+        </button>
+        
+        <button class="btn-details" 
+                (click)="viewOrderDetails(order)">
+          Ver Detalles
+        </button>
+        
+        <button *ngIf="order.status === 'pending'" 
+                class="btn-cancel"
+                (click)="cancelOrder(order)">
+          Cancelar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Resumen estadístico -->
+  <div class="orders-summary">
+    <div class="summary-card">
+      <span class="summary-count pending">{{ getOrderStats().pending }}</span>
+      <span class="summary-label">Pendientes</span>
+    </div>
+    <div class="summary-card">
+      <span class="summary-count delivered">{{ getOrderStats().delivered }}</span>
+      <span class="summary-label">Entregados</span>
+    </div>
+    <div class="summary-card">
+      <span class="summary-count total">${{ getOrderStats().total | number:'1.2-2' }}</span>
+      <span class="summary-label">Total General</span>
+    </div>
+  </div>
+
+  <!-- Modal para nuevo pedido -->
+  <div *ngIf="showOrderModal" class="modal-overlay" (click)="showOrderModal = false">
+    <div class="modal-content large-modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Nuevo Pedido</h3>
+        <button class="close-btn" (click)="showOrderModal = false">×</button>
+      </div>
+      
+      <div class="modal-body">
+        <form (ngSubmit)="createOrder()" #orderForm="ngForm">
+          <!-- Selección de cliente -->
+          <div class="form-group">
+            <label>Cliente *</label>
+            <select [(ngModel)]="newOrder.customerId" name="customerId" required class="form-select">
+              <option value="0">Seleccionar cliente...</option>
+              <option *ngFor="let customer of customers" [value]="customer.id">
+                {{ customer.name }} ({{ customer.ruc }})
+              </option>
+            </select>
+          </div>
+          
+          <!-- Agregar productos -->
+          <div class="form-group">
+            <label>Agregar Productos</label>
+            <div class="product-selector">
+              <select [(ngModel)]="currentProduct.productId" name="productId" class="form-select" style="flex: 2;">
+                <option value="0">Seleccionar producto...</option>
+                <option *ngFor="let product of availableProducts" [value]="product.id">
+                  {{ product.name }} - ${{ product.price | number:'1.2-2' }} (Stock: {{ product.stock }})
+                </option>
+              </select>
+              
+              <input type="number" 
+                     [(ngModel)]="currentProduct.quantity" 
+                     name="quantity" 
+                     min="1" 
+                     class="form-input" 
+                     style="flex: 1;"
+                     placeholder="Cantidad">
+              
+              <button type="button" 
+                      class="btn-add-product" 
+                      (click)="addProductToOrder()"
+                      [disabled]="!currentProduct.productId || currentProduct.quantity < 1">
+                Agregar
+              </button>
+            </div>
+          </div>
+          
+          <!-- Productos agregados -->
+          <div class="form-group" *ngIf="newOrder.items.length > 0">
+            <label>Productos en el pedido:</label>
+            <div class="order-items-list">
+              <div *ngFor="let item of newOrder.items; let i = index" class="order-item">
+                <div class="item-details">
+                  <span class="item-name">{{ item.productName }}</span>
+                  <span class="item-quantity">{{ item.quantity }} x ${{ item.unitPrice | number:'1.2-2' }}</span>
+                  <span class="item-total">${{ item.total | number:'1.2-2' }}</span>
+                </div>
+                <button type="button" class="btn-remove-item" (click)="removeItem(i)">×</button>
+              </div>
+            </div>
+            
+            <!-- Resumen del pedido -->
+            <div class="order-summary-preview">
+              <div class="summary-row">
+                <span>Subtotal:</span>
+                <span>${{ calculateSubtotal() | number:'1.2-2' }}</span>
+              </div>
+              <div class="summary-row">
+                <span>IVA (15%):</span>
+                <span>${{ calculateTax() | number:'1.2-2' }}</span>
+              </div>
+              <div class="summary-row total">
+                <span>Total:</span>
+                <span>${{ calculateTotal() | number:'1.2-2' }}</span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Notas -->
+          <div class="form-group">
+            <label>Notas adicionales</label>
+            <textarea [(ngModel)]="newOrder.notes" name="notes" class="form-textarea" rows="3"></textarea>
+          </div>
+          
+          <!-- Mensaje de error -->
+          <div *ngIf="error" class="error-message">
+            {{ error }}
+          </div>
+          
+          <!-- Acciones del modal -->
+          <div class="modal-actions">
+            <button type="button" class="btn-cancel" (click)="showOrderModal = false">Cancelar</button>
+            <button type="submit" 
+                    class="btn-save" 
+                    [disabled]="!orderForm.form.valid || newOrder.items.length === 0">
+              Crear Pedido
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal para detalles del pedido -->
+  <div *ngIf="showOrderDetailModal && selectedOrder" class="modal-overlay" (click)="showOrderDetailModal = false">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Detalles del Pedido {{ selectedOrder.id }}</h3>
+        <button class="close-btn" (click)="showOrderDetailModal = false">×</button>
+      </div>
+      
+      <div class="modal-body">
+        <div class="order-detail-section">
+          <h4>Información General</h4>
+          <div class="detail-grid">
+            <div class="detail-item">
+              <strong>Cliente:</strong> {{ selectedOrder.customerName }}
+            </div>
+            <div class="detail-item">
+              <strong>Estado:</strong> 
+              <span class="status-badge {{ getStatusClass(selectedOrder.status) }}">
+                {{ getStatusText(selectedOrder.status) }}
+              </span>
+            </div>
+            <div class="detail-item">
+              <strong>Fecha pedido:</strong> {{ selectedOrder.orderDate | date:'dd/MM/yyyy HH:mm' }}
+            </div>
+            <div class="detail-item" *ngIf="selectedOrder.deliveryDate">
+              <strong>Fecha entrega:</strong> {{ selectedOrder.deliveryDate | date:'dd/MM/yyyy' }}
+            </div>
+            <div class="detail-item" *ngIf="selectedOrder.invoiceNumber">
+              <strong>Factura:</strong> {{ selectedOrder.invoiceNumber }}
+            </div>
+          </div>
+        </div>
+        
+        <div class="order-detail-section">
+          <h4>Productos</h4>
+          <table class="products-table">
+            <thead>
+              <tr>
+                <th>Producto</th>
+                <th>Cantidad</th>
+                <th>Precio Unitario</th>
+                <th>Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of selectedOrder.items">
+                <td>{{ item.productName }}</td>
+                <td>{{ item.quantity }}</td>
+                <td>${{ item.unitPrice | number:'1.2-2' }}</td>
+                <td>${{ item.total | number:'1.2-2' }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        
+        <div class="order-detail-section">
+          <h4>Resumen Financiero</h4>
+          <div class="financial-summary">
+            <div class="summary-row">
+              <span>Subtotal:</span>
+              <span>${{ selectedOrder.subtotal | number:'1.2-2' }}</span>
+            </div>
+            <div class="summary-row">
+              <span>IVA (15%):</span>
+              <span>${{ selectedOrder.tax | number:'1.2-2' }}</span>
+            </div>
+            <div class="summary-row total">
+              <span>Total:</span>
+              <span>${{ selectedOrder.total | number:'1.2-2' }}</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="order-detail-section" *ngIf="selectedOrder.notes">
+          <h4>Notas</h4>
+          <p class="order-notes">{{ selectedOrder.notes }}</p>
+        </div>
+        
+        <div class="modal-actions">
+          <button *ngIf="selectedOrder.status === 'pending'" 
+                  class="btn-acknowledge"
+                  (click)="generateInvoice(selectedOrder); showOrderDetailModal = false">
+            Generar Factura
+          </button>
+          
+          <button *ngIf="selectedOrder.status === 'delivered' && selectedOrder.invoiceNumber" 
+                  class="btn-details success"
+                  (click)="downloadInvoice(selectedOrder)">
+            Descargar Factura
+          </button>
+          
+          <button type="button" class="btn-cancel" (click)="showOrderDetailModal = false">
+            Cerrar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
